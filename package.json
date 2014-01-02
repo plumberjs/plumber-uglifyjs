@@ -1,10 +1,10 @@
 {
   "name": "plumber-uglifyjs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "UglifyJS operation for Plumber pipelines",
   "main": "index",
   "dependencies": {
-    "plumber": "~0.1.2",
+    "plumber": "~0.1.12",
     "uglify-js": "~2.4.0"
   },
   "scripts": {
