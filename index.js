@@ -10,7 +10,10 @@ module.exports = function(/* no options */) {
         // Note: we use the more custom API so we can pass data in and
         // get source maps out
 
-        var toplevel_ast = UglifyJS.parse(resource.data());
+        var toplevel_ast = UglifyJS.parse(resource.data(), {
+            // TODO: or relative?
+            filename: resource.path().absolute()
+        });
         toplevel_ast.figure_out_scope();
 
         // TODO: catch and report warnings?
@@ -22,7 +25,7 @@ module.exports = function(/* no options */) {
         compressed_ast.mangle_names();
 
         var sourceMapData = UglifyJS.SourceMap({
-            file: minResource.sourceMapFilename(),
+            file: minResource.filename(),
             // pass through current sourcemap if any
             orig: resource.sourceMap()
         });
