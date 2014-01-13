@@ -10,9 +10,9 @@ module.exports = function(/* no options */) {
         // Note: we use the more custom API so we can pass data in and
         // get source maps out
 
+        var originalFile = resource.path() && resource.path().absolute();
         var toplevel_ast = UglifyJS.parse(resource.data(), {
-            // TODO: or relative?
-            filename: resource.path().absolute()
+            filename: originalFile
         });
         toplevel_ast.figure_out_scope();
 
