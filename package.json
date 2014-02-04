@@ -4,11 +4,19 @@
   "description": "UglifyJS operation for Plumber pipelines",
   "main": "index",
   "dependencies": {
-    "plumber": "~0.1.12",
+    "plumber": "~0.2.4",
+    "mercator": "~0.1.4",
     "uglify-js": "~2.4.0"
   },
+  "devDependencies": {
+    "mocha": "~1.16.2",
+    "chai": "~1.8.1",
+    "source-map": "~0.1.31",
+    "mocha-as-promised": "~2.0.0",
+    "chai-as-promised": "~4.1.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
