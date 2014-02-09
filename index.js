@@ -12,7 +12,9 @@ module.exports = function(/* no options */) {
         // get source maps out
 
         var originalFile = resource.path() && resource.path().absolute();
-        var toplevel_ast = UglifyJS.parse(resource.data(), {
+        var originalData = resource.data();
+        var originalSourceMap = resource.sourceMap();
+        var toplevel_ast = UglifyJS.parse(originalData, {
             filename: originalFile
         });
         toplevel_ast.figure_out_scope();
@@ -28,7 +30,7 @@ module.exports = function(/* no options */) {
         var sourceMapHolder = UglifyJS.SourceMap({
             file: minResource.filename(),
             // pass through current sourcemap if any
-            orig: resource.sourceMap()
+            orig: originalSourceMap
         });
 
         var uglifiedData = compressed_ast.print_to_string({
@@ -36,6 +38,23 @@ module.exports = function(/* no options */) {
         });
 
         var sourceMap = SourceMap.fromMapData(sourceMapHolder.toString());
+
+        // Annoyingly, UglifyJS doesn't remap the sourcesContent from
+        // the file or the original source map (it is done as a
+        // workaround in the `minify' helper we don't use:
+        // https://github.com/mishoo/UglifyJS2/blob/master/tools/node.js#L115
+        if (! sourceMap.sourcesContent) {
+            if (originalSourceMap) {
+                // Re-apply sourcesContent (if any) from original source map
+                var originalContent = originalSourceMap.sourcesContent || [];
+                originalSourceMap.sources.forEach(function(source, i) {
+                    sourceMap = sourceMap.withSourceContent(source, originalContent[i]);
+                });
+            } else {
+                // Use resource data as source content
+                sourceMap = sourceMap.withSourceContent(originalFile, originalData);
+            }
+        }
 
         // FIXME: using uglify's input sourcemap feature above, but it
         // seems to lose sources content, names and columns.  This

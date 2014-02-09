@@ -61,7 +61,7 @@ describe('uglifyjs', function(){
             return uglifiedResources.then(function(resources) {
                 var sourceMap = resources[0].sourceMap();
                 sourceMap.sources.should.deep.equal(['path/to/file.js']);
-                // sourceMap.sourcesContent.should.deep.equal([firstSource]);
+                sourceMap.sourcesContent.should.deep.equal([firstSource]);
 
                 // check mappings
                 var map = new SourceMapConsumer(sourceMap);
@@ -149,11 +149,10 @@ describe('uglifyjs', function(){
                     'path/to/two.js',
                     'path/to/one.js'
                 ]);
-                // FIXME: sources content lost in remapping?
-                // sourceMap.sourcesContent.should.deep.equal([
-                //     "var added = addOne(answer);\nfunction addOne(number) {\n  return number + 1;\n}\n",
-                //     "/* source */\nvar answer = 42;\n"
-                // ]);
+                sourceMap.sourcesContent.should.deep.equal([
+                    "var added = addOne(answer);\nfunction addOne(number) {\n  return number + 1;\n}\n",
+                    "/* source */\nvar answer = 42;\n"
+                ]);
 
                 var map = new SourceMapConsumer(sourceMap);
                 /*
