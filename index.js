@@ -11,7 +11,8 @@ module.exports = function(/* no options */) {
         // Note: we use the more custom API so we can pass data in and
         // get source maps out
 
-        var originalFile = resource.path() && resource.path().absolute();
+        var originalAbsPath = resource.path() && resource.path().absolute();
+        var originalFile = originalAbsPath || resource.filename();
         var originalData = resource.data();
         var originalSourceMap = resource.sourceMap();
         var toplevel_ast = UglifyJS.parse(originalData, {
@@ -48,7 +49,13 @@ module.exports = function(/* no options */) {
                 // Re-apply sourcesContent (if any) from original source map
                 var originalContent = originalSourceMap.sourcesContent || [];
                 originalSourceMap.sources.forEach(function(source, i) {
-                    sourceMap = sourceMap.withSourceContent(source, originalContent[i]);
+                    // In some edge case, not all sources from the
+                    // original map are present in the uglify map; if
+                    // absent, we don't try to record the source
+                    // content
+                    if (sourceMap.sources.indexOf(source) !== -1) {
+                        sourceMap = sourceMap.withSourceContent(source, originalContent[i]);
+                    }
                 });
             } else {
                 // Use resource data as source content
