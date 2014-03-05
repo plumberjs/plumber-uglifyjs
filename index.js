@@ -1,11 +1,11 @@
-var mapEachResource = require('plumber').mapEachResource;
+var operation = require('plumber').operation;
 var SourceMap = require('mercator').SourceMap;
 
 var UglifyJS = require('uglify-js');
 
 
 module.exports = function(/* no options */) {
-    return mapEachResource(function(resource) {
+    return operation.map(function(resource) {
         var minResource = resource.withTransformation('minimised', 'min');
 
         // Note: we use the more custom API so we can pass data in and
