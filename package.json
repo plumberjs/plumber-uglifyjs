@@ -4,16 +4,15 @@
   "description": "UglifyJS operation for Plumber pipelines",
   "main": "index",
   "dependencies": {
-    "plumber": "~0.2.4",
+    "plumber": "git://github.com/plumberjs/plumber.git#highland",
     "mercator": "~0.1.6",
     "uglify-js": "~2.4.0"
   },
   "devDependencies": {
+    "plumber-util-test": "~0.3.0",
     "mocha": "~1.16.2",
     "chai": "~1.8.1",
-    "source-map": "~0.1.31",
-    "mocha-as-promised": "~2.0.0",
-    "chai-as-promised": "~4.1.0"
+    "source-map": "~0.1.31"
   },
   "scripts": {
     "test": "node_modules/.bin/mocha"

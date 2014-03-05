@@ -1,13 +1,10 @@
 var chai = require('chai');
 chai.should();
-var chaiAsPromised = require("chai-as-promised");
-
-chai.use(chaiAsPromised);
-
-require('mocha-as-promised')();
 
 var SourceMapConsumer = require('source-map').SourceMapConsumer;
 
+
+var runOperation = require('plumber-util-test').runOperation;
 
 var Resource = require('plumber').Resource;
 var SourceMap = require('mercator').SourceMap;
@@ -39,26 +36,28 @@ describe('uglifyjs', function(){
         var uglifiedResources;
 
         beforeEach(function() {
-            uglifiedResources = uglifyjs()([
+            uglifiedResources = runOperation(uglifyjs(), [
                 createResource({path: 'path/to/file.js', type: 'javascript', data: firstSource})
-            ]);
+            ]).resources;
         });
 
-        it('should return a single resource with uglified content', function(){
-            return uglifiedResources.then(function(resources) {
+        it('should return a single resource with uglified content', function(done){
+            uglifiedResources.toArray(function(resources) {
                 resources.length.should.equal(1);
                 resources[0].data().should.equal(firstSourceUglified);
+                done();
             });
         });
 
-        it('should return a resource with .min filename', function(){
-            return uglifiedResources.then(function(resources) {
+        it('should return a resource with .min filename', function(done){
+            uglifiedResources.toArray(function(resources) {
                 resources[0].filename().should.equal('file.min.js');
+                done();
             });
         });
 
-        it('should return a resource with a source map for the minimisation', function(){
-            return uglifiedResources.then(function(resources) {
+        it('should return a resource with a source map for the minimisation', function(done){
+            return uglifiedResources.toArray(function(resources) {
                 var sourceMap = resources[0].sourceMap();
                 sourceMap.sources.should.deep.equal(['path/to/file.js']);
                 sourceMap.sourcesContent.should.deep.equal([firstSource]);
@@ -125,6 +124,8 @@ describe('uglifyjs', function(){
                     column: 4,
                     name: "added"
                 });
+
+                done();
             });
         });
     });
@@ -136,13 +137,13 @@ describe('uglifyjs', function(){
         var concatMap = SourceMap.fromMapData('{"version":3,"file":"concatenated.js","mappings":"AAAA;AACA;ACDA;AACA;AACA;AACA;AACA","sources":["path/to/one.js","path/to/two.js"],"sourcesContent":["/* source */\\nvar answer = 42;\\n","var added = addOne(answer);\\nfunction addOne(number) {\\n  return number + 1;\\n}\\n"],"names":[]}');
 
         beforeEach(function() {
-            uglifiedResources = uglifyjs()([
+            uglifiedResources = runOperation(uglifyjs(), [
                 createResource({path: 'path/to/concatenated.js', type: 'javascript', data: firstSource, sourceMap: concatMap})
-            ]);
+            ]).resources;
         });
 
-        it('should return a resource with a source map for the minimisation combined with the input source map', function(){
-            return uglifiedResources.then(function(resources) {
+        it('should return a resource with a source map for the minimisation combined with the input source map', function(done){
+            return uglifiedResources.toArray(function(resources) {
                 var sourceMap = resources[0].sourceMap();
 
                 sourceMap.sources.should.deep.equal([
@@ -226,6 +227,8 @@ describe('uglifyjs', function(){
                     // column: 4,
                     // name: "added"
                 });
+
+                done();
             });
         });
 
@@ -236,17 +239,18 @@ describe('uglifyjs', function(){
         var uglifiedResources;
 
         beforeEach(function() {
-            uglifiedResources = uglifyjs()([
+            uglifiedResources = runOperation(uglifyjs(), [
                 createResource({path: 'path/to/first.js', type: 'javascript', data: firstSource}),
                 createResource({path: 'path/to/second.js', type: 'javascript', data: secondSource})
-            ]);
+            ]).resources;
         });
 
-        it('should return two uglified resource', function(){
-            return uglifiedResources.then(function(resources) {
+        it('should return two uglified resource', function(done){
+            uglifiedResources.toArray(function(resources) {
                 resources.length.should.equal(2);
                 resources[0].data().should.equal(firstSourceUglified);
                 resources[1].data().should.equal(secondSourceUglified);
+                done();
             });
         });
 
