@@ -4,7 +4,7 @@
   "description": "UglifyJS operation for Plumber pipelines",
   "main": "index",
   "dependencies": {
-    "plumber": "git://github.com/plumberjs/plumber.git#highland",
+    "plumber": "~0.3.0",
     "mercator": "~0.1.6",
     "uglify-js": "~2.4.0"
   },
