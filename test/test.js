@@ -5,6 +5,7 @@ var SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 
 var runOperation = require('plumber-util-test').runOperation;
+var completeWithResources = require('plumber-util-test').completeWithResources;
 
 var Resource = require('plumber').Resource;
 var SourceMap = require('mercator').SourceMap;
@@ -13,6 +14,10 @@ var uglifyjs = require('..');
 
 function createResource(params) {
     return new Resource(params);
+}
+
+function resourcesError() {
+  chai.assert(false, "error in resources observable");
 }
 
 
@@ -42,22 +47,20 @@ describe('uglifyjs', function(){
         });
 
         it('should return a single resource with uglified content', function(done){
-            uglifiedResources.toArray(function(resources) {
+            completeWithResources(uglifiedResources, function(resources) {
                 resources.length.should.equal(1);
                 resources[0].data().should.equal(firstSourceUglified);
-                done();
-            });
+            }, resourcesError, done);
         });
 
         it('should return a resource with .min filename', function(done){
-            uglifiedResources.toArray(function(resources) {
+            completeWithResources(uglifiedResources, function(resources) {
                 resources[0].filename().should.equal('file.min.js');
-                done();
-            });
+            }, resourcesError, done);
         });
 
         it('should return a resource with a source map for the minimisation', function(done){
-            return uglifiedResources.toArray(function(resources) {
+            completeWithResources(uglifiedResources, function(resources) {
                 var sourceMap = resources[0].sourceMap();
                 sourceMap.sources.should.deep.equal(['path/to/file.js']);
                 sourceMap.sourcesContent.should.deep.equal([firstSource]);
@@ -124,9 +127,7 @@ describe('uglifyjs', function(){
                     column: 4,
                     name: "added"
                 });
-
-                done();
-            });
+            }, resourcesError, done);
         });
     });
 
@@ -143,7 +144,7 @@ describe('uglifyjs', function(){
         });
 
         it('should return a resource with a source map for the minimisation combined with the input source map', function(done){
-            return uglifiedResources.toArray(function(resources) {
+            completeWithResources(uglifiedResources, function(resources) {
                 var sourceMap = resources[0].sourceMap();
 
                 sourceMap.sources.should.deep.equal([
@@ -227,9 +228,7 @@ describe('uglifyjs', function(){
                     // column: 4,
                     // name: "added"
                 });
-
-                done();
-            });
+            }, resourcesError, done);
         });
 
     });
@@ -246,12 +245,11 @@ describe('uglifyjs', function(){
         });
 
         it('should return two uglified resource', function(done){
-            uglifiedResources.toArray(function(resources) {
+            completeWithResources(uglifiedResources, function(resources) {
                 resources.length.should.equal(2);
                 resources[0].data().should.equal(firstSourceUglified);
                 resources[1].data().should.equal(secondSourceUglified);
-                done();
-            });
+            }, resourcesError, done);
         });
 
     });
